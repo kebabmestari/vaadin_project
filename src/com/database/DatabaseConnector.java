@@ -1,3 +1,5 @@
+package com.database;
+
 import com.database.Queries;
 
 import java.sql.*;
@@ -9,15 +11,15 @@ import java.util.logging.Logger;
  */
 public class DatabaseConnector {
 
-    private final Logger LOG;
+    private static final Logger LOG;
     private final boolean gotConnector;
 
-    private final static String sUser = "user";
-    private final static String sPasswd = "kebab";
+    private String sUser = "user";
+    private String sPasswd = "kebab";
 
-    public static final String dbName = "wordSystem";
-    public static final String sAddress = "localhost";
-    public static final int sPort = 3306;
+    public static String dbName = "wordSystem";
+    public static String sAddress = "localhost";
+    public static int sPort = 3306;
     private Connection conn = null;
 
     // connector instance, only one required per system
@@ -28,7 +30,6 @@ public class DatabaseConnector {
      */
     private DatabaseConnector() {
         // Get logger
-        LOG = Logger.getLogger(DatabaseConnector.class.getName());
         // Register connector
         gotConnector = getConnector();
     }
@@ -90,6 +91,52 @@ public class DatabaseConnector {
     }
 
     /**
+     * @return boolean indicating the status of connection
+     */
+    public boolean isConnected() {
+        if(conn != null) {
+            try {
+                return !conn.isClosed();
+            } catch (SQLException e) {
+                LOG.warning("Querying db server status failed");
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Close database connection
+     */
+    public void closeConnection() {
+        if(conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                LOG.warning("Could not close db connection");
+                e.printStackTrace();
+                return;
+            }
+        }
+        if(!isConnected()) {
+            LOG.info("Database connection closed");
+        }
+    }
+
+    /**
+     * Remove connector instance so a new can be fetched
+     * System uses only one instance but unit tests have their own
+     */
+    public void removeInstance() {
+        if(!isConnected()) {
+            LOG.info("Connection still open, closing..");
+            closeConnection();
+        }
+        connectorInstance = null;
+        LOG.fine("Db connector instance removed");
+    }
+
+    /**
      * Static method for receiving the instance of the connector
      * or initializing new with default values if does not exists
      * @return
@@ -111,7 +158,7 @@ public class DatabaseConnector {
      * @param user
      * @param pwd
      */
-    public static void setDbServer(String address, int port, String user, String pwd) {
+    public void setDbServer(String address, int port, String user, String pwd) {
         sAddress = address;
         sPort = port;
         sUser = user;
@@ -125,13 +172,12 @@ public class DatabaseConnector {
      * @param address ip address
      * @param port port
      */
-    public static void setDbServer(String address, int port) {
+    public void setDbServer(String address, int port) {
         setDbServer(address, port, sUser, sPasswd);
     }
 
-    public static void main(String... args) {
-        // TESTI
-        DatabaseConnector asd = new DatabaseConnector();
-        asd.connect();
+    // fetch class logger
+    static {
+        LOG = Logger.getLogger(DatabaseConnector.class.getName());
     }
 }

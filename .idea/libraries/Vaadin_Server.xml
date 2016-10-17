@@ -15,6 +15,9 @@
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/vaadin-sass-compiler-0.9.13.jar!/" />
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/vaadin-slf4j-jdk14-1.6.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/validation-api-1.0.0.GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-server-7.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-shared-7.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-widgets-7.7.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
@@ -23,6 +26,9 @@
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/gwt-user-2.7.0.vaadin4.jar!/" />
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/vaadin-sass-compiler-0.9.13.jar!/" />
       <root url="jar://$PROJECT_DIR$/../vaadin/lib/validation-api-1.0.0.GA-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-server-7.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-shared-7.7.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../vaadin/vaadin-widgets-7.7.1.jar!/" />
     </SOURCES>
   </library>
 </component>
