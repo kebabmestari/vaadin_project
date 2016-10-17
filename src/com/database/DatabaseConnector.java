@@ -1,3 +1,5 @@
+import com.database.Queries;
+
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -10,13 +12,16 @@ public class DatabaseConnector {
     private final Logger LOG;
     private final boolean gotConnector;
 
-    private final static String defUser = "user";
-    private final static String defPasswd = "kebab";
+    private final static String sUser = "user";
+    private final static String sPasswd = "kebab";
 
     public static final String dbName = "wordSystem";
-    public static final String defAddress = "localhost";
-    public static final int defPort = 3306;
-    private Connection conn;
+    public static final String sAddress = "localhost";
+    public static final int sPort = 3306;
+    private Connection conn = null;
+
+    // connector instance, only one required per system
+    private static DatabaseConnector connectorInstance;
 
     /**
      * Constructor
@@ -49,7 +54,7 @@ public class DatabaseConnector {
      * @return true if the connection was successfull
      */
     public boolean connect() {
-        return connect(defAddress, defPort, defUser, defPasswd);
+        return connect(sAddress, sPort, sUser, sPasswd);
     }
 
     /**
@@ -76,8 +81,7 @@ public class DatabaseConnector {
             return false;
         }
 
-        LOG.info("Connected to server at " + address);
-
+        LOG.info("Connected to database server at " + address);
 
         // initialize prepared statements
         Queries.initStatements(conn);
@@ -87,10 +91,42 @@ public class DatabaseConnector {
 
     /**
      * Static method for receiving the instance of the connector
+     * or initializing new with default values if does not exists
      * @return
      */
     public static DatabaseConnector getInstance() {
+        if (connectorInstance == null) {
+            LOG.info("No db connector, initializing new...");
+            LOG.info("address " + sAddress + ":" + sPort);
+            connectorInstance = new DatabaseConnector();
+        }
 
+        return connectorInstance;
+    }
+
+    /**
+     * Set db server config
+     * @param address
+     * @param port
+     * @param user
+     * @param pwd
+     */
+    public static void setDbServer(String address, int port, String user, String pwd) {
+        sAddress = address;
+        sPort = port;
+        sUser = user;
+        sPasswd = pwd;
+        LOG.fine("Set up server config");
+    }
+
+
+    /**
+     * Set db server ip and port
+     * @param address ip address
+     * @param port port
+     */
+    public static void setDbServer(String address, int port) {
+        setDbServer(address, port, sUser, sPasswd);
     }
 
     public static void main(String... args) {

@@ -19,7 +19,7 @@ public class StringCrypt {
      * Changes byte array to hex formatted string
      *
      * @param arr byte array
-     * @return String representing the byte array in hex format converted to String
+     * @return string representing the byte array in hex format converted to String
      */
     private static String byteArrToHexString(byte[] arr) {
         StringBuilder builder = new StringBuilder(arr.length * 2);
@@ -39,8 +39,8 @@ public class StringCrypt {
     /**
      * Encrypts a string with SHA256-algorithm
      *
-     * @param text Unencrypted string to be encrypted
-     * @return Encryped String
+     * @param text unencrypted string to be encrypted
+     * @return encryped String
      */
     public static String encrypt(String text) {
         String result = "";
@@ -48,7 +48,9 @@ public class StringCrypt {
             sha.update(text.getBytes("UTF-8"));
             result = byteArrToHexString(sha.digest());
         } catch (IOException e) {
+            LOG.warning("Failed to encrypt password");
             e.printStackTrace();
+            result = null;
         }
         return result;
     }
@@ -65,14 +67,15 @@ public class StringCrypt {
         }
     }
 
-    public static void main(String[] args) {
-        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
-            try {
-                System.out.println(encrypt(cin.readLine()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    // test class pls ignore
+//    public static void main(String[] args) {
+//        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
+//        while (true) {
+//            try {
+//                System.out.println(encrypt(cin.readLine()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }
