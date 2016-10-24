@@ -23,15 +23,15 @@ public class Queries {
         SQL queries
      */
     // fetch encrypted password for authentication
-    private static String queryText_getUserPassword =
-            "SELECT passwd FROM user WHERE name = ?;";
+    private static String queryText_getUser =
+            "SELECT idUser AS id, name, date, passwd FROM user WHERE name = ?;";
+    // find out if user exists
+    private static String queryText_getUserExists =
+            "SELECT COUNT(*) FROM user WHERE name = ?";
     // insert new user
     private static String queryText_registerNewUser =
             "INSERT INTO user(name, passwd) VALUES" +
             "(?, ?, CURDATE());";
-    // does username already exists
-    private static String queryText_getUserNameExists =
-            "SELECT name FROM user WHERE name = ?;";
     // fetch words in list
     private static String queryText_getWords =
             "SELECT * FROM word WHERE EXISTS (SELECT * FROM wordEntry" +
@@ -77,9 +77,9 @@ public class Queries {
         queries = new HashMap<>();
 
         try {
-            queries.put("getUserPassword",      conn.prepareStatement(queryText_getUserPassword));
+            queries.put("getUser",              conn.prepareStatement(queryText_getUser));
+            queries.put("getUserExists",        conn.prepareStatement(queryText_getUserExists));
             queries.put("registerNewUser",      conn.prepareStatement(queryText_registerNewUser));
-            queries.put("getUserNameExists",    conn.prepareStatement(queryText_getUserNameExists));
             queries.put("getWords",             conn.prepareStatement(queryText_getWords));
             queries.put("addWord",              conn.prepareStatement(queryText_addWord));
             queries.put("createList",           conn.prepareStatement(queryText_createList));
@@ -99,7 +99,11 @@ public class Queries {
      * @return PreparedStatement if found, null otherwise
      */
     public static PreparedStatement getQuery(String name) {
-        return queries.get(name);
+        PreparedStatement result = queries.get(name);
+        if(result == null) {
+            LOG.warning("Query " + name + " could not be found!");
+        }
+        return result;
     }
 
     /**
