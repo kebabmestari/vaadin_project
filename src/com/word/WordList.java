@@ -15,12 +15,46 @@ public class WordList {
 
     // set of words (word entry in database) in the list
     private Set<Word> words;
+    // max score
+    private int maxScore;
+    // list id
+    private int id;
+    // list name
+    private String name;
 
     // constructor
     public WordList() {
         words = new HashSet<>();
         LOG.fine("Word list created");
     }
+
+    /* Getters and setters */
+
+    public int getId() {
+        return id;
+    }
+
+    void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    void setName(String name) {
+        this.name = name;
+    }
+
+    public int getMaxScore() {
+        return maxScore;
+    }
+
+    void setMaxScore(int maxScore) {
+        this.maxScore = maxScore;
+    }
+
+    /* Utility methods */
 
     /**
      * @param word
@@ -42,7 +76,7 @@ public class WordList {
     /**
      * @return word count
      */
-    public int getCount() {
+    public int getWordCount() {
         return words.size();
     }
 
@@ -51,6 +85,7 @@ public class WordList {
      */
     void flushToDataBase() {
         // FIXME: 17.10.2016 DO THIS
+        LOG.info("Flushed word list " + this.name);
     }
 
     static {

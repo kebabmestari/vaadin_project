@@ -14,6 +14,7 @@ public class WordListProvider {
      */
     public static WordList getList(int id) {
 
+        return null;
     }
 
     /**
@@ -23,6 +24,7 @@ public class WordListProvider {
      */
     public static Set<WordList> getUserLists(User user) {
 
+        return null;
     }
 
     /**
@@ -32,5 +34,6 @@ public class WordListProvider {
      */
     public static Set<WordList> getUserFavourites(User user) {
 
+        return null;
     }
 }

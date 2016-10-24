@@ -1,5 +1,7 @@
 package com.word;
 
+import com.word.lang.Language;
+
 import java.util.logging.Logger;
 
 /**
@@ -13,37 +15,62 @@ public class Word {
 
     // word string itself
     private String word;
-    // boolean indicating if this word has an explanation/master or if it's a root word
-    private boolean hasMaster;
+    // identifier
+    private int id;
+
     // if it has a master, then it needs a reference to it
     private Word master;
     // word language
-//    private Language lang;
+    private Language lang;
 
     // constructor
-    public Word() {
+    Word() {
         LOG.fine("Word " + this.word + " created");
     }
+
+    /* Getters and setters */
+
+    // word string
 
     public String getWord() {
         return word;
     }
-
     public void setWord(String word) {
         this.word = word;
     }
 
-    private boolean hasMaster() {
-        return hasMaster;
-    }
+    // master/explanation word
 
     public Word getMaster() {
         return master;
     }
-
     public void setMaster(Word master) {
         this.master = master;
-        this.hasMaster = true;
+    }
+
+    // language
+
+    public Language getLang() {
+        return lang;
+    }
+    public void setLang(Language lang) {
+        this.lang = lang;
+    }
+
+    // integer indentifier
+
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * @return true if this word is a root word, aka has no translation
+     */
+    public boolean isRoot() {
+        return (master == null);
     }
 
     static {
