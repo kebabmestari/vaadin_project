@@ -176,6 +176,21 @@ public class DatabaseConnector {
         setDbServer(address, port, sUser, sPasswd);
     }
 
+    /**
+     * Sanitize string to be used as query to prevent injection
+     * @param str
+     * @return string which has been trimmed and stripped of malicious special characters
+     */
+    public static String sanitizeString(String str) {
+        return str
+                .trim()
+                .toLowerCase()
+                .replace("'", "")
+                .replace(";", "")
+                .replace("(", "")
+                .replace(")", "");
+    }
+
     // fetch class logger
     static {
         LOG = Logger.getLogger(DatabaseConnector.class.getName());
