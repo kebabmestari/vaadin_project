@@ -1,8 +1,6 @@
 package com.database;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.util.logging.Logger;
 
@@ -66,16 +64,4 @@ public class StringCrypt {
             e.printStackTrace();
         }
     }
-
-    // test class pls ignore
-//    public static void main(String[] args) {
-//        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
-//        while (true) {
-//            try {
-//                System.out.println(encrypt(cin.readLine()));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 }
