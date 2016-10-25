@@ -12,7 +12,7 @@ public enum Query {
     GET_USER_EXISTS(
             "SELECT COUNT(*) FROM user WHERE name = ?"),
     CREATE_USER(
-            "INSERT INTO user(name, passwd) VALUES(?, ?, CURDATE());"),
+            "INSERT INTO user(name, passwd, date) VALUES(?, ?, CURDATE());"),
 
     GET_WORDS(
             "SELECT * FROM word WHERE EXISTS (SELECT * FROM wordEntry WHERE idList = ? AND idWord = word.idWord LIMIT 1);"),
