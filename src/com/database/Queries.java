@@ -31,7 +31,7 @@ public class Queries {
 
         try {
             for(Query q : Query.values()) {
-                queries.put(q, conn.prepareStatement(q.toString()));
+                queries.put(q, conn.prepareStatement(q.getSQL()));
             }
         } catch (SQLException e) {
             LOG.warning("Failed to initialize SQL queries");
@@ -45,7 +45,7 @@ public class Queries {
     /**
      * Fetch a prepared statement object
      *
-     * @param name Name of the query
+     * @param query query object
      * @return PreparedStatement if found, null otherwise
      */
     public static PreparedStatement getQuery(Query query) {

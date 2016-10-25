@@ -2,6 +2,7 @@ package com.user;
 
 import com.database.DatabaseConnector;
 import com.database.Queries;
+import com.database.Query;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,13 +21,13 @@ public class UserTest {
     @Test
     public void userExists() throws Exception {
         // test whether test user exists
-        Assert.assertTrue(User.userExists("unitTester"));
+        Assert.assertTrue(UserProvider.userExists("unitTester"));
     }
 
     @Test
     public void passwordMatch() throws Exception {
         String pwd = com.database.StringCrypt.encrypt("kebab");
-        PreparedStatement sta = Queries.getQuery("getUser");
+        PreparedStatement sta = Queries.getQuery(Query.GET_USER_INFO);
         sta.setString(1, "unitTester");
         ResultSet res = sta.executeQuery();
         res.next();

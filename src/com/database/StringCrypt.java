@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.util.logging.Logger;
 
 /**
- * Utility class for generating a SHA256 encrypter password
+ * Utility class for generating a SHA256 encrypted password
  * Created by samlinz on 16.10.2016.
  */
 public class StringCrypt {
