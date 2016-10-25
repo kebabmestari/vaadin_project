@@ -1,14 +1,11 @@
 package com.user;
 
-import com.database.DatabaseConnector;
-import com.database.Queries;
 import com.game.Result;
 import com.word.WordList;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -17,44 +14,69 @@ import java.util.logging.Logger;
  */
 public class User {
 
-    // logger
-    private static Logger LOG;
-
     // user account name
     private String name;
+    // identifier
+    private int id;
+
     // list of user's lists
     private Set<WordList> ownLists;
+
+    // results
+    private List<Result> results;
+
     // user favourited lists
     private Set<WordList> favourites;
 
     // instatiate using the provider
-    public User(String name) {
-        this.name = name;
-        LOG.fine("User object " + name + " created.");
+    User() {
+        LOG.fine("User object " + this.toString() + " created.");
     }
 
     /**
      * Fetch all user results
      */
     public List<Result> getResults() {
-        // FIXME: 17.10.2016 TODO
-        return null;
+        return results;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * Add user result to list
+     * @param res result object
+     */
+    public void addResult(Result res) {
+        results.add(res);
+    }
+
 
     /**
      * Fetch user results from a timespan
      */
-    public List<Result> getResults(Date start, Date end) {
+/*    public List<Result> getResults(Date start, Date end) {
         if (start.compareTo(end) <= 0) {
             LOG.warning("Invalid dates");
             return null;
         }
         // FIXME: 17.10.2016 TODO
         return null;
-    }
+    }*/
 
-    static {
-        LOG = Logger.getLogger(User.class.getName());
-    }
+    private static final Logger LOG = Logger.getLogger(User.class.getName());
 
 }
