@@ -3,10 +3,8 @@ package com.user;
 import com.database.DatabaseConnector;
 import com.database.Queries;
 import com.database.Query;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.google.gwt.editor.client.Editor;
+import org.junit.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,6 +20,12 @@ public class UserTest {
     public void userExists() throws Exception {
         // test whether test user exists
         Assert.assertTrue(UserProvider.userExists("unitTester"));
+    }
+
+    @Test
+    @Ignore
+    public void newUserCreationWorks() throws Exception {
+        Assert.assertTrue(UserFactory.createNewUserAndFlushToDatabase("nakki", "muusi"));
     }
 
     @Test
