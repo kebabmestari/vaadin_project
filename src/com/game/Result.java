@@ -25,13 +25,17 @@ public class Result {
     // reference to the user who made the result
     private User user;
 
+    Result() {
+        LOG.fine("Result object " + this.toString() + " created");
+    }
+
     /* Getters and setters */
 
     public Date getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    void setDate(Date date) {
         this.date = date;
     }
 
@@ -47,7 +51,7 @@ public class Result {
         return time;
     }
 
-    public void setTime(int time) {
+    void setTime(int time) {
         this.time = time;
     }
 
@@ -55,7 +59,7 @@ public class Result {
         return score;
     }
 
-    public void setScore(int score) {
+    void setScore(int score) {
         this.score = score;
     }
 
@@ -63,7 +67,7 @@ public class Result {
         return maxScore;
     }
 
-    public void setMaxScore(int maxScore) {
+    void setMaxScore(int maxScore) {
         this.maxScore = maxScore;
     }
 
@@ -71,7 +75,7 @@ public class Result {
         return user;
     }
 
-    public void setUser(User user) {
+   void setUser(User user) {
         this.user = user;
     }
 
