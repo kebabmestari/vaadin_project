@@ -1,5 +1,6 @@
 package com.user;
 
+import com.database.Freeable;
 import com.game.Result;
 import com.word.WordList;
 
@@ -12,12 +13,14 @@ import java.util.logging.Logger;
  * Class representing the user of database
  * Created by samlinz on 17.10.2016.
  */
-public class User {
+public class User implements Freeable{
 
     // user account name
     private String name;
     // identifier
     private int id;
+    // creation date
+    private Date creationDate;
 
     // list of user's lists
     private Set<WordList> ownLists;
@@ -56,6 +59,14 @@ public class User {
         this.id = id;
     }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
     /**
      * Add user result to list
      * @param res result object
@@ -63,7 +74,6 @@ public class User {
     public void addResult(Result res) {
         results.add(res);
     }
-
 
     /**
      * Fetch user results from a timespan
@@ -76,6 +86,18 @@ public class User {
         // FIXME: 17.10.2016 TODO
         return null;
     }*/
+
+    /**
+     * Free user from memory
+     * so it can be garbage collected
+     */
+    @Override
+    public void free() {
+        LOG.fine("Freeing user " + getName() + " memory");
+        this.results = null;
+        this.ownLists = null;
+        this.favourites = null;
+    }
 
     private static final Logger LOG = Logger.getLogger(User.class.getName());
 

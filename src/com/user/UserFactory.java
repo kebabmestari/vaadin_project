@@ -3,10 +3,12 @@ package com.user;
 import com.database.Queries;
 import com.database.Query;
 import com.database.StringCrypt;
+import com.util.DateProvider;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import static com.user.UserProvider.userExists;
@@ -17,26 +19,31 @@ import static com.user.UserProvider.userExists;
  * Created by samlinz on 26.10.2016.
  */
 public class UserFactory {
+
     /**
-     * Create a new user and push it to the db
+     * Fetch a user data from db and create an object
      *
      * @param name
      * @param pwd
      * @return
      */
-    public static boolean fetchUsers(String name, String pwd) {
-        name = name.toLowerCase();
+    public static <T> boolean fetchUser(T identifier) {
         try {
-            if (!userExists(name)) {
-                PreparedStatement st = Queries.getQuery(Query.CREATE_USER);
+            if (!userExists(identifier)) {
+                if(identifier instanceof Integer) {
+                PreparedStatement st = Queries.getQuery(Query.GET_USER_INFO);
                 st.setString(1, name);
-                st.setString(1, StringCrypt.encrypt(pwd));
 
                 ResultSet res = st.executeQuery();
-                res.next();
+                if(res.next()) {
+                    User newUser = createUser(res.getString("name"), res.getInt("idUser"),
+                            DateProvider.getDateAsDate(res.getString("date")));
+                    UserProvider.addUserToUserMap(name, newUser);
+                } else {
+                    LOG.info("Could not fetch user " + name + ". User does not exist");
+                    return false;
+                }
 
-                User newUser = createUser(res.getString("name"), res.getInt("idUser"));
-                UserProvider.addUserToUserMap(name, newUser);
             } else {
                 LOG.warning("Cannot create user " + name + ". User exits already.");
             }
@@ -53,11 +60,14 @@ public class UserFactory {
      * Create new user object
      *
      * @param name user name
+     * @param id
+     * @param date
      * @return user object
      */
-    public static User createUser(String name, int id) {
+    public static User createUser(String name, int id, Date date) {
         User newUser = new User();
         newUser.setName(name);
+        newUser.setCreationDate(date);
         return newUser;
     }
 
@@ -84,7 +94,7 @@ public class UserFactory {
             e.printStackTrace();
             return false;
         }
-        User newUser = createUser(name, UserProvider.getNextId());
+        User newUser = createUser(name, UserProvider.getNextId(), DateProvider.getDate());
         if (flushUser(newUser, pwd)) {
             LOG.info("New user " + name + " successfully created and flushed to database");
             UserProvider.addUserToUserMap(name, newUser);

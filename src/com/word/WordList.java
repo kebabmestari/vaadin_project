@@ -1,5 +1,7 @@
 package com.word;
 
+import com.user.User;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -21,6 +23,8 @@ public class WordList {
     private int id;
     // list name
     private String name;
+    // creator
+    private User creator;
 
     // constructor
     public WordList() {
@@ -32,6 +36,14 @@ public class WordList {
 
     public int getId() {
         return id;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     void setId(int id) {

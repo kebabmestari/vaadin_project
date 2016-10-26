@@ -1,6 +1,7 @@
 package com.database;
 
 import com.database.Queries;
+import com.game.Result;
 
 import java.sql.*;
 import java.util.Properties;
@@ -190,6 +191,26 @@ public class DatabaseConnector {
                 .replace("(", "")
                 .replace(")", "");
     }
+
+/*    *//**
+     * Builds the required system objects from
+     * @throws NotFlushedException if new objects are not flushed to database
+     *//*
+    public static void buildSystemState() throws NotFlushedException{
+        LOG.info("Building system state from database...");
+
+        ResultSet rs;
+
+        // create all user objects
+        PreparedStatement userSt = Queries.getQuery(Query.GET_ALL_USERS);
+        rs = userSt.executeQuery();
+        LOG.info("Fetching users and building user objects");
+        while(rs.next()) {
+
+        }
+
+        LOG.info("System state restored!");
+    }*/
 
     // fetch class logger
     static {

@@ -7,14 +7,18 @@ package com.database;
  */
 public enum Query {
 
+    GET_ALL_USERS(
+            "SELECT idUser AS id, name, date, passwd FROM user;"),
     GET_USER_INFO(
             "SELECT idUser AS id, name, date, passwd FROM user WHERE name = ?;"),
-    GET_USER_EXISTS(
+    GET_USER_EXISTS_BY_NAME(
             "SELECT COUNT(*) FROM user WHERE name = ?"),
+    GET_USER_EXISTS_BY_ID(
+            "SELECT COUNT(*) FROM user WHERE idUser = ?"),
     CREATE_USER(
             "INSERT INTO user(name, passwd, date) VALUES(?, ?, CURDATE());"),
 
-    GET_WORDS(
+    GET_LIST_WORDS(
             "SELECT * FROM word WHERE EXISTS (SELECT * FROM wordEntry WHERE idList = ? AND idWord = word.idWord LIMIT 1);"),
     CREATE_WORD(
             "INSERT INTO word(word, idMaster, idLang) SELECT ?, master.idWord, lang.idLanguage FROM " +
@@ -25,7 +29,8 @@ public enum Query {
     CREATE_WORDENTRY(
             "INSERT INTO wordEntry(idWord, idList) SELECT word.idWord, list.idList FROM word, list " +
             "WHERE word.idWord = ? AND list.idList = ?;"),
-
+    GET_LIST(
+            "SELECT name, creator FROM list WHERE idList = ?"),
     GET_RESULTS(
             "SELECT * FROM result WHERE idResult = ?;"),
     GET_USER_RESULTS(

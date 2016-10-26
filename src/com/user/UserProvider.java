@@ -31,10 +31,16 @@ public class UserProvider {
      * @return true if user exists, false otherwise
      * @throws SQLException sql exception if there was problem with connection rather that finding user
      */
-    public static boolean userExists(String name) throws SQLException {
-        LOG.fine("Checking whether user " + name + " exists");
-        PreparedStatement st = Queries.getQuery(Query.GET_USER_EXISTS);
-        st.setString(1, DatabaseConnector.sanitizeString(name));
+    public static <T> boolean userExists(T identifier) throws SQLException {
+        LOG.fine("Checking whether user " + identifier.toString() + " exists");
+        PreparedStatement st;
+        if (identifier instanceof Integer) {
+            st = Queries.getQuery(Query.GET_USER_EXISTS_BY_ID);
+            st.setInt(1, (Integer) identifier);
+        } else if ( identifier instanceof String) {
+            st = Queries.getQuery(Query.GET_USER_EXISTS_BY_NAME);
+            st.setString(1, DatabaseConnector.sanitizeString((String) identifier));
+        }
         ResultSet res = st.executeQuery();
         if (res.next()) {
             return res.getInt(1) > 0;
@@ -73,12 +79,64 @@ public class UserProvider {
     public static int getNextId() {
         int id = 1;
         for (Map.Entry e : userMap.entrySet()) {
-            int tempId = ((User)e.getValue()).getId();
+            int tempId = ((User) e.getValue()).getId();
             if (tempId > id) {
                 id = tempId;
             }
         }
         return id;
+    }
+
+    /**
+     * After user logs out etc
+     * it's data and related objects are freed from memory
+     */
+    public static void freeUser(User user) {
+        user.free();
+        userMap.remove(user.getName());
+    }
+
+    /**
+     * Return user from memory or load from db
+     *
+     * @param name user name
+     * @return User object
+     */
+    public static User getUser(String name) {
+        name = name.toLowerCase();
+        User result = userMap.get(name);
+        if (result == null) {
+            if (userExists(name)) {
+                UserFactory.fetchUser(name);
+                // recursive call, but this time the user exists in map
+                return getUser(name);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Return user by id
+     *
+     * @param id user id
+     * @return User object
+     */
+    public static User getUser(int id) {
+        User result;
+        for (Map.Entry e : userMap.entrySet()) {
+            User u = (User) e.getValue();
+            if (u.getId() == id) {
+                result = u;
+                break;
+            }
+        }
+        if (result == null) {
+            if (userExists(id)) {
+                UserFactory.fetchUser(id);
+                // recursive call, but this time the user exists in map
+                return getUser(id);
+            }
+        }
     }
 
     /**

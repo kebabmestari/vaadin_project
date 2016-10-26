@@ -1,5 +1,6 @@
 package com.game;
 
+import com.database.Freeable;
 import com.user.User;
 import com.word.WordList;
 
@@ -19,7 +20,7 @@ public class Result {
     // time in seconds
     private int time;
     // max score
-    private int maxScore;
+    private int maxScore = 10; // FIXME: 27.10.2016 TEE MUOKATTAVA!!
     // run score
     private int score;
     // reference to the user who made the result

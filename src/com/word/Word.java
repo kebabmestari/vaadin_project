@@ -2,6 +2,7 @@ package com.word;
 
 import com.word.lang.Language;
 
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -18,8 +19,8 @@ public class Word {
     // identifier
     private int id;
 
-    // if it has a master, then it needs a reference to it
-    private Word master;
+    // if it has a master(s), then it needs a reference to them
+    private Set<Word> masters;
     // word language
     private Language lang;
 
@@ -36,16 +37,19 @@ public class Word {
         return word;
     }
     public void setWord(String word) {
-        this.word = word;
+        this.word = word.toLowerCase();
     }
 
     // master/explanation word
 
-    public Word getMaster() {
-        return master;
+    public Set<Word> getMasters() {
+        return masters;
     }
-    public void setMaster(Word master) {
-        this.master = master;
+    public void addMaster(Word master) {
+        this.masters.add(master);
+    }
+    public void setMasters(Set<Word> masters) {
+        this.masters.addAll(masters);
     }
 
     // language
@@ -70,7 +74,23 @@ public class Word {
      * @return true if this word is a root word, aka has no translation
      */
     public boolean isRoot() {
-        return (master == null);
+        return (masters.size() == 0);
+    }
+
+    /**
+     * Iterates through the master words and checks if given
+     * string is a correct translation for this word
+     * @param word answered word as string
+     * @return true if the answer is correct
+     */
+    public boolean isExplanation(String word) {
+        word = word.toLowerCase();
+        for(Word w : this.masters) {
+            if(w.getWord().equals(word)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static {
