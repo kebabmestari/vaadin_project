@@ -5,6 +5,7 @@ import com.database.Query;
 import com.game.Result;
 import com.game.ResultFactory;
 import com.user.UserProvider;
+import com.word.lang.LanguageProvider;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +28,7 @@ public class WordListBuilder {
 
         PreparedStatement pt, pt2;
         ResultSet rs, rs2;
+
         try {
             pt = Queries.getQuery(Query.GET_LIST);
             rs = pt.executeQuery();
@@ -41,9 +43,9 @@ public class WordListBuilder {
             pt2 = Queries.getQuery(Query.GET_LIST_WORDS);
             rs2 = pt2.executeQuery();
             while (rs.next()) {
-                Result result = ResultFactory.createNewResult(
-                        UserProvider.getUser(rs.getInt("idUser"))
-                );
+                int id = rs.getInt("idWord");
+                Word word = WordProvider.getWord(id);
+
             }
             pt.close();
         } catch(SQLException e) {

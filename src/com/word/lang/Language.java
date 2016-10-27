@@ -11,10 +11,19 @@ public class Language implements Tag{
     // identifier
     private int id;
 
-    // constructor
-    Language(String name, int id) {
-        this.name = name.toLowerCase();
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

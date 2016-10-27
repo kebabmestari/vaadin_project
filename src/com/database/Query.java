@@ -23,6 +23,11 @@ public enum Query {
     CREATE_WORD(
             "INSERT INTO word(word, idMaster, idLang) SELECT ?, master.idWord, lang.idLanguage FROM " +
             "word AS master, language AS lang WHERE word.idWord = ? AND lang.idLang = ?;"),
+    GET_WORD("SELECT * FROM word WHERE idWord = ?;"),
+    GET_WORD_MASTERS_IDS("SELECT * FROM wordExplanation WHERE idWord = ?;"),
+    GET_LANGUAGES(
+            "SELECT * FROM language;"
+    ),
 
     CREATE_LIST(
             "INSERT INTO list(name, creator) VALUES(?, ?);"),

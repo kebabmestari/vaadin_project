@@ -2,7 +2,9 @@ package com.word;
 
 import com.user.User;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -16,7 +18,7 @@ public class WordList {
     private static Logger LOG;
 
     // set of words (word entry in database) in the list
-    private Set<Word> words;
+    private List<Word> words;
     // max score
     private int maxScore;
     // list id
@@ -28,7 +30,7 @@ public class WordList {
 
     // constructor
     public WordList() {
-        words = new HashSet<>();
+        words = new ArrayList<>();
         LOG.fine("Word list created");
     }
 
@@ -64,6 +66,14 @@ public class WordList {
 
     void setMaxScore(int maxScore) {
         this.maxScore = maxScore;
+    }
+
+    public List<Word> getWords() {
+        return words;
+    }
+
+    public void setWords(List<Word> words) {
+        this.words = words;
     }
 
     /* Utility methods */

@@ -1,6 +1,8 @@
 package com.word;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -17,11 +19,15 @@ public class WordListInstance {
     private static Logger LOG;
     // list of appeared words
     private final Set<Word> appeared;
+    // rng
+    private Random randomGenerator;
 
     // cannot instatiate explicitly
     private WordListInstance() {
         // init word set
         appeared = new HashSet<>();
+
+        randomGenerator = new Random();
     }
 
     // return master list
@@ -35,11 +41,15 @@ public class WordListInstance {
     }
 
     /**
-     * Mark a word as used in this iteration
-     * @param word
+     * Return a random word from the list
+     * @return Word object
      */
-    void markAsUsed(Word word) {
-        // FIXME: 17.10.2016  
+    public Word getNextWord() {
+        List<Word> words = masterList.getWords();
+        Word word = words.get(randomGenerator.nextInt(words.size()));
+        appeared.add(word);
+        LOG.info("Picked word " + word.getWord());
+        return word;
     }
 
     /**
