@@ -2,6 +2,7 @@ package com.database;
 
 import com.database.Queries;
 import com.game.Result;
+import com.word.lang.LanguageProvider;
 
 import java.sql.*;
 import java.util.Properties;
@@ -88,7 +89,18 @@ public class DatabaseConnector {
         // initialize prepared statements
         Queries.initStatements(conn);
 
+        buildSystemState();
+
         return true;
+    }
+
+    /**
+     * Some things are required to be loaded beforehand,
+     * like language data
+     */
+    public void buildSystemState() {
+        LOG.info("Building system state...");
+        LanguageProvider.fetchLanguages();
     }
 
     /**
@@ -113,6 +125,7 @@ public class DatabaseConnector {
         if(conn != null) {
             try {
                 conn.close();
+                Queries.closeQueries();
             } catch (SQLException e) {
                 LOG.warning("Could not close db connection");
                 e.printStackTrace();
@@ -134,7 +147,7 @@ public class DatabaseConnector {
             closeConnection();
         }
         connectorInstance = null;
-        LOG.fine("Db connector instance removed");
+        LOG.info("Db connector instance removed");
     }
 
     /**
@@ -164,7 +177,7 @@ public class DatabaseConnector {
         sPort = port;
         sUser = user;
         sPasswd = pwd;
-        LOG.fine("Set up server config");
+        LOG.info("Set up server config");
     }
 
 

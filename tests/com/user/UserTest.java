@@ -33,6 +33,7 @@ public class UserTest {
         String pwd = com.database.StringCrypt.encrypt("kebab");
         PreparedStatement sta = Queries.getQuery(Query.GET_USER_INFO);
         sta.setString(1, "unitTester");
+        sta.setInt(2, -1);
         ResultSet res = sta.executeQuery();
         res.next();
         Assert.assertTrue(res.getString("passwd").equals(pwd));

@@ -59,6 +59,20 @@ public class Queries {
         return isInitialized;
     }
 
+    /**
+     * Closes all PreparedStatements!
+     */
+    public static void closeQueries() {
+        for(Map.Entry w : queries.entrySet()) {
+            try {
+                ((PreparedStatement) w.getValue()).close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        LOG.info("Closed all queries");
+    }
+
     static {
         isInitialized = false;
         LOG = Logger.getLogger(Queries.class.getName());

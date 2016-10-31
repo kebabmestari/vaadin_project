@@ -1,9 +1,7 @@
 package com.user;
 
-import com.database.DatabaseConnector;
-import com.database.Queries;
-import com.database.Query;
-import com.database.StringCrypt;
+import com.database.*;
+import com.util.DateProvider;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +23,50 @@ public class UserProvider {
     private static Map<String, User> userMap = new HashMap<>();
 
     /**
+     * Fetch a user data from db and create an object
+     *
+     * @param identifier
+     * @return
+     */
+    public static <T> boolean fetchUser(T identifier) {
+        try {
+            if (userExists(identifier)) {
+
+                PreparedStatement st = Queries.getQuery(Query.GET_USER_INFO);
+
+                // accept different types of indentifiers
+                if(identifier instanceof String) {
+                    st.setString(1, (String) identifier);
+                    st.setInt(2, -1);
+                } else if(identifier instanceof Integer) {
+                    st.setString(1, "");
+                    st.setInt(2, (Integer) identifier);
+                } else {
+                    LOG.warning("Invalid type given to fetchuser");
+                    return false;
+                }
+
+                ResultSet res = st.executeQuery();
+                if(res.next()) {
+                    String tempName = res.getString("name");
+                    User newUser = UserFactory.createUser(tempName, res.getInt("idUser"),
+                            DateProvider.getDateAsDate(res.getString("date")));
+                    UserProvider.addUserToUserMap(tempName, newUser);
+                } else {
+                    LOG.info("Could not fetch user " + identifier + ". User does not exist");
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOG.warning("Error occurred in user creation. User " + identifier + " was not created.");
+        }
+        return false;
+    }
+
+    /**
      * Checks whether user exists in database
      *
      * @param name user name
@@ -32,18 +74,25 @@ public class UserProvider {
      * @throws SQLException sql exception if there was problem with connection rather that finding user
      */
     public static <T> boolean userExists(T identifier) throws SQLException {
-        LOG.fine("Checking whether user " + identifier.toString() + " exists");
-        PreparedStatement st;
-        if (identifier instanceof Integer) {
-            st = Queries.getQuery(Query.GET_USER_EXISTS_BY_ID);
-            st.setInt(1, (Integer) identifier);
-        } else if ( identifier instanceof String) {
-            st = Queries.getQuery(Query.GET_USER_EXISTS_BY_NAME);
-            st.setString(1, DatabaseConnector.sanitizeString((String) identifier));
+        LOG.info("Checking whether user " + identifier.toString() + " exists");
+        QueryRunner qr;
+        if(identifier instanceof String){
+            qr = QueryRunner.getRunner(Query.GET_USER_EXISTS_BY_NAME);
+            qr.setParam((String) identifier);
+        } else if(identifier instanceof Integer) {
+            qr = QueryRunner.getRunner(Query.GET_USER_EXISTS_BY_ID);
+            qr.setParam((Integer) identifier);
+        } else {
+            LOG.warning("Invalid user identifier");
+            return false;
         }
-        ResultSet res = st.executeQuery();
-        if (res.next()) {
-            return res.getInt(1) > 0;
+        qr.run();
+        final int users = qr.getResultRows();
+        if(users == 1) {
+            return true;
+        } else if(users > 1) {
+            LOG.severe("Duplicate user id's in db!");
+            return true;
         }
         return false;
     }
@@ -77,14 +126,9 @@ public class UserProvider {
      * @return highest existsing id incremented by one
      */
     public static int getNextId() {
-        int id = 1;
-        for (Map.Entry e : userMap.entrySet()) {
-            int tempId = ((User) e.getValue()).getId();
-            if (tempId > id) {
-                id = tempId;
-            }
-        }
-        return id;
+        QueryRunner qr = QueryRunner.getRunner(Query.GET_MAX_USER_ID);
+        qr.run();
+        return qr.getResults(Integer.class, "max").get(0) + 1;
     }
 
     /**
@@ -106,10 +150,14 @@ public class UserProvider {
         name = name.toLowerCase();
         User result = userMap.get(name);
         if (result == null) {
-            if (userExists(name)) {
-                UserFactory.fetchUser(name);
-                // recursive call, but this time the user exists in map
-                return getUser(name);
+            try {
+                if (userExists(name)) {
+                    fetchUser(name);
+                    // recursive call, but this time the user exists in map
+                    return getUser(name);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
         return result;
@@ -122,7 +170,7 @@ public class UserProvider {
      * @return User object
      */
     public static User getUser(int id) {
-        User result;
+        User result = null;
         for (Map.Entry e : userMap.entrySet()) {
             User u = (User) e.getValue();
             if (u.getId() == id) {
@@ -131,12 +179,17 @@ public class UserProvider {
             }
         }
         if (result == null) {
-            if (userExists(id)) {
-                UserFactory.fetchUser(id);
-                // recursive call, but this time the user exists in map
-                return getUser(id);
+            try {
+                if (userExists(id)) {
+                    fetchUser(id);
+                    // recursive call, but this time the user exists in map
+                    result = getUser(id);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
+        return result;
     }
 
     /**

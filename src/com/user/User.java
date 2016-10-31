@@ -33,7 +33,7 @@ public class User implements Freeable{
 
     // instatiate using the provider
     User() {
-        LOG.fine("User object " + this.toString() + " created.");
+        LOG.info("User object " + this.toString() + " created.");
     }
 
     /**
@@ -93,7 +93,7 @@ public class User implements Freeable{
      */
     @Override
     public void free() {
-        LOG.fine("Freeing user " + getName() + " memory");
+        LOG.info("Freeing user " + getName() + " memory");
         this.results = null;
         this.ownLists = null;
         this.favourites = null;

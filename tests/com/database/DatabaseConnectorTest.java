@@ -12,10 +12,10 @@ import org.junit.Test;
 public class DatabaseConnectorTest {
 
     // test configuration, use test account!
-    private static final String address = "localhost";
-    private static final int port = 3306;
-    private static final String user = "unitTest";
-    private static final String passwd = "kebab";
+    public static final String address = "localhost";
+    public static final int port = 3306;
+    public static final String user = "unitTester";
+    public static final String passwd = "kebab";
 
     private DatabaseConnector dbConn;
 

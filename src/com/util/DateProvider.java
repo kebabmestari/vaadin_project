@@ -83,6 +83,6 @@ public class DateProvider {
     }
 
     static {
-        LOG.fine("Date provider utility initialized");
+        LOG.info("Date provider utility initialized");
     }
 }

@@ -2,11 +2,13 @@ package com.word.lang;
 
 import com.database.Queries;
 import com.database.Query;
+import com.database.QueryRunner;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,7 +31,7 @@ public class LanguageProvider {
             newlang.setId(id);
             newlang.setName(name);
             languageMap.put(id, newlang);
-            LOG.fine("Added language " + name);
+            LOG.info("Added language " + name);
         }
     }
 
@@ -38,28 +40,31 @@ public class LanguageProvider {
      * no need to management, so few
      */
     public static void fetchLanguages() {
-        final PreparedStatement st = Queries.getQuery(Query.GET_LANGUAGES);
-        ResultSet rs = null;
-        try {
-            rs = st.executeQuery();
-            while(rs.next()) {
-                addLanguage(rs.getString("name"), rs.getInt("idLanguage"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if(st != null) st.close();
-                if(rs != null) rs.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            LOG.info("Languages fetched into system");
+        QueryRunner qr = QueryRunner.getRunner(Query.GET_LANGUAGES);
+        qr.run();
+        List<Integer> langIds   = qr.getResults(Integer.class, "idLanguage");
+        List<String> langNames  = qr.getResults(String.class, "name");
+        for(int i = 0; i < langIds.size(); i++) {
+            addLanguage(langNames.get(i), langIds.get(i));
         }
+        qr.close();
     }
 
+    /**
+     * Retvieve a language object
+     * @param id lang id
+     * @return Language object if it exists, null otherwise
+     */
     public static Language getLanguage(int id) {
         return languageMap.get(id);
     }
+
+    /**
+     * Clear language map
+     */
+    public static void removeLanguages() {
+        languageMap.clear();
+    }
+
     private static Logger LOG = Logger.getLogger(LanguageProvider.class.getName());
 }

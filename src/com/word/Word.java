@@ -2,6 +2,7 @@ package com.word;
 
 import com.word.lang.Language;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ public class Word {
 
     // constructor
     Word() {
-        LOG.fine("Word " + this.word + " created");
+        masters = new HashSet<>();
     }
 
     /* Getters and setters */

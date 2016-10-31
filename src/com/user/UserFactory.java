@@ -21,42 +21,6 @@ import static com.user.UserProvider.userExists;
 public class UserFactory {
 
     /**
-     * Fetch a user data from db and create an object
-     *
-     * @param name
-     * @param pwd
-     * @return
-     */
-    public static <T> boolean fetchUser(T identifier) {
-        try {
-            if (!userExists(identifier)) {
-                if(identifier instanceof Integer) {
-                PreparedStatement st = Queries.getQuery(Query.GET_USER_INFO);
-                st.setString(1, name);
-
-                ResultSet res = st.executeQuery();
-                if(res.next()) {
-                    User newUser = createUser(res.getString("name"), res.getInt("idUser"),
-                            DateProvider.getDateAsDate(res.getString("date")));
-                    UserProvider.addUserToUserMap(name, newUser);
-                } else {
-                    LOG.info("Could not fetch user " + name + ". User does not exist");
-                    return false;
-                }
-
-            } else {
-                LOG.warning("Cannot create user " + name + ". User exits already.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOG.warning("Error occurred in user creation. User " + name + " was not created.");
-        }
-        return false;
-    }
-
-    /**
      * Create new user object
      *
      * @param name user name
@@ -67,6 +31,7 @@ public class UserFactory {
     public static User createUser(String name, int id, Date date) {
         User newUser = new User();
         newUser.setName(name);
+        newUser.setId(id);
         newUser.setCreationDate(date);
         return newUser;
     }

@@ -1,4 +1,7 @@
-package com.word;
+package com.game;
+
+import com.word.Word;
+import com.word.WordList;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,11 +10,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * An instance of word list in usage, to track the
- * already appeared words
+ * An instance of word list in usage
+ * Supplies new words and tracks the score
  * Created by samlinz on 17.10.2016.
  */
-public class WordListInstance {
+public class RoundInstance {
 
     // list of which this object is related to
     private WordList masterList;
@@ -21,13 +24,18 @@ public class WordListInstance {
     private final Set<Word> appeared;
     // rng
     private Random randomGenerator;
+    // score for this round
+    private int score;
+    // word number
+    private int wordNumber;
 
     // cannot instatiate explicitly
-    private WordListInstance() {
+    public RoundInstance() {
         // init word set
-        appeared = new HashSet<>();
-
-        randomGenerator = new Random();
+        this.appeared = new HashSet<>();
+        this.randomGenerator = new Random();
+        this.wordNumber = 1;
+        this.score = 0;
     }
 
     // return master list
@@ -45,30 +53,33 @@ public class WordListInstance {
      * @return Word object
      */
     public Word getNextWord() {
+
+        if(isOver()) {
+
+        }
+
         List<Word> words = masterList.getWords();
         Word word = words.get(randomGenerator.nextInt(words.size()));
         appeared.add(word);
         LOG.info("Picked word " + word.getWord());
+
+        wordNumber++;
+
         return word;
     }
 
+    public void setMaster(WordList list) {
+        this.masterList = list;
+    }
+
     /**
-     * Create an instance of word list
-     * @param list
-     * @return word list instance tracker
+     * @return true if this word is the last in round
      */
-    public static WordListInstance getInstance(WordList list) {
-        WordListInstance result = new WordListInstance();
-        // FIXME: 17.10.2016 CONNECT TO SESSION!
-        if(list == null) {
-            LOG.warning("Invalid list given, null pointer");
-            return null;
-        }
-        result.setMasterList(list);
-        return result;
+    public boolean isOver() {
+        return wordNumber > masterList.getWordCount();
     }
 
     static {
-        LOG = Logger.getLogger(WordListInstance.class.getName());
+        LOG = Logger.getLogger(RoundInstance.class.getName());
     }
 }

@@ -27,7 +27,7 @@ public class Result {
     private User user;
 
     Result() {
-        LOG.fine("Result object " + this.toString() + " created");
+        LOG.info("Result object " + this.toString() + " created");
     }
 
     /* Getters and setters */

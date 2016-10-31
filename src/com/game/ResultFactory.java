@@ -34,7 +34,7 @@ public class ResultFactory {
         newResult.setList(list);
         newResult.setMaxScore(list.getMaxScore());
         newResult.setTime(time);
-        LOG.fine("Created new result " + newResult.toString());
+        LOG.info("Created new result " + newResult.toString());
         return newResult;
     }
 
@@ -52,10 +52,15 @@ public class ResultFactory {
         ResultSet res = st.executeQuery();
         while(res.next()) {
             Result newRes =
-                    ResultFactory.createNewResult(user,
-                    WordListProvider.getList(res.getInt("idList")),
-                    res.getInt("score"),
-                    res.getInt("time"));
+                    null;
+            try {
+                newRes = ResultFactory.createNewResult(user,
+                WordListProvider.getList(res.getInt("idList")),
+                res.getInt("score"),
+                res.getInt("time"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             user.addResult(newRes);
         }
     }

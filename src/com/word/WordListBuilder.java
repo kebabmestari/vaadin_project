@@ -2,6 +2,7 @@ package com.word;
 
 import com.database.Queries;
 import com.database.Query;
+import com.database.QueryRunner;
 import com.game.Result;
 import com.game.ResultFactory;
 import com.user.UserProvider;
@@ -10,6 +11,7 @@ import com.word.lang.LanguageProvider;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -18,57 +20,34 @@ import java.util.logging.Logger;
  */
 public class WordListBuilder {
     /**
-     * Executes SQL queries and builds the word list
+     * Builds a list
      * @param id word list id
      * @return WordList object
      */
     public static WordList buildWordList(int id) {
-        WordList result = new WordList();
-        result.setId(id);
-
-        PreparedStatement pt, pt2;
-        ResultSet rs, rs2;
-
-        try {
-            pt = Queries.getQuery(Query.GET_LIST);
-            rs = pt.executeQuery();
-            if(rs.next()) {
-                result.setName(rs.getString("name"));
-                result.setCreator(UserProvider.getUser(rs.getString("creator")));
-            } else {
-                LOG.warning("No list " + id + " exists");
-                return null;
-            }
-            pt.close();
-            pt2 = Queries.getQuery(Query.GET_LIST_WORDS);
-            rs2 = pt2.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("idWord");
-                Word word = WordProvider.getWord(id);
-
-            }
-            pt.close();
-        } catch(SQLException e) {
-            LOG.warning("Could not build word list id " + id);
+        LOG.info("Building word list " + id);
+        final QueryRunner qr = QueryRunner.getRunner(Query.GET_LIST);
+        qr.setParam(id);
+        qr.run();
+        // check if the list exists in the first place
+        if(qr.getResultRows() <= 0) {
+            LOG.warning("List " + id + " cannot be built. It doesn't exists in db!");
             return null;
-        } finally {
-            try {
-                if (!pt.isClosed()) {
-                    pt.close();
-                }
-                if (!pt2.isClosed()) {
-                    pt2.close();
-                }
-                if (!rs.isClosed()) {
-                    rs.close();
-                }
-                if (!rs2.isClosed()) {
-                    rs2.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
+        String name   = qr.getResults(String.class, "name").get(0);
+        int creator   = qr.getResults(Integer.class, "creator").get(0);
+        int maxPoints = qr.getResults(Integer.class, "maxPoints").get(0);
+        WordList newList = new WordList();
+        newList.setName(name);
+        newList.setId(id);
+        newList.setMaxScore(maxPoints);
+        newList.setCreator(UserProvider.getUser(creator));
+        // retrieve the words of the list
+        final List<Word> listWords = WordListProvider.getListWords(id);
+        newList.setWords(listWords);
+        LOG.info("Word list " + id + " built");
+        WordListProvider.addListToMap(newList);
+        return newList;
     }
 
     private static Logger LOG = Logger.getLogger(WordListBuilder.class.getName());

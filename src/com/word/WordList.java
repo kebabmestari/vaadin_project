@@ -31,7 +31,7 @@ public class WordList {
     // constructor
     public WordList() {
         words = new ArrayList<>();
-        LOG.fine("Word list created");
+        LOG.info("Word list created");
     }
 
     /* Getters and setters */
