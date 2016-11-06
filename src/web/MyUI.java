@@ -1,7 +1,9 @@
 package web;
 
 import com.database.DatabaseConnector;
+import com.vaadin.annotations.Push;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.UI;
 
 /**
@@ -9,6 +11,7 @@ import com.vaadin.ui.UI;
  */
 
 /*@Theme("theme")*/
+@Push(PushMode.MANUAL)
 public class MyUI extends UI {
 
     // user session if logged in
@@ -59,7 +62,7 @@ public class MyUI extends UI {
 
     static {
         dbConn = DatabaseConnector.getInstance();
-        dbConn.connect("localhost", 3306, "webUser", "kebab");
+        dbConn.connect("localhost", 3306, "root", "lollolehtia1");
     }
 
 }

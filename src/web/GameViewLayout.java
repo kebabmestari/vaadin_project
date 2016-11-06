@@ -10,6 +10,7 @@ import com.word.Word;
 import com.word.WordList;
 import com.word.WordListProvider;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
 /**
@@ -19,10 +20,11 @@ import java.util.logging.Logger;
 class TimeTracker extends Thread {
 
     private boolean running;
-    private int time;
+    private final int time;
     private long startTime;
     private GameViewLayout cb;
     private Logger LOG;
+    private long lastTick;
 
     public void stopRunning() {
         running = false;
@@ -32,7 +34,7 @@ class TimeTracker extends Thread {
         super();
         this.running = true;
         this.time = timeleft * 1000;
-        this.startTime = System.currentTimeMillis();
+        this.startTime = this.lastTick = System.currentTimeMillis();
         this.LOG = Logger.getLogger(TimeTracker.class.getName());
         LOG.info("Initialized TimeTracker with maxtime " + this.time + " and starttime" + this.startTime);
 
@@ -41,14 +43,23 @@ class TimeTracker extends Thread {
 
     @Override
     public void run() {
-        long timer;
+        AtomicLong timer = new AtomicLong(0);
         while (running) {
-            timer = System.currentTimeMillis() - startTime;
-            if (timer >= time) {
-                cb.timeOut();
+            timer.set(System.currentTimeMillis() - startTime);
+            if (timer.get() >= time) {
+                UI.getCurrent().access(()-> {
+                    cb.timeOut();
+                    UI.getCurrent().push();
+                });
                 break;
             }
-//            cb.setTimeBar((float) timer / (float) time);
+            if(System.currentTimeMillis() - this.lastTick > 1000) {
+                this.lastTick = System.currentTimeMillis();
+                UI.getCurrent().access(()-> {
+                    cb.setTimeBar((float) timer.get() / (float) time);
+                    UI.getCurrent().push();
+                });
+            }
         }
     }
 }
@@ -111,9 +122,9 @@ public class GameViewLayout extends GameView {
     }
 
     public void setTimeBar(float val) {
-/*        synchronized(timeleft) {
+        synchronized(timeleft) {
             this.timeleft.setValue(val);
-        }*/
+        }
     }
 
     /**
@@ -129,8 +140,8 @@ public class GameViewLayout extends GameView {
             return;
         }
 
-/*        timer = new TimeTracker(this, TIME);
-        timer.start();*/
+        timer = new TimeTracker(this, TIME);
+        timer.start();
 
         // fetch next word
         try {
