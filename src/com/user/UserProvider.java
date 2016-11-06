@@ -1,12 +1,16 @@
 package com.user;
 
 import com.database.*;
+
 import com.util.DateProvider;
+import org.eclipse.jetty.util.log.Log;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -32,36 +36,29 @@ public class UserProvider {
         try {
             if (userExists(identifier)) {
 
-                PreparedStatement st = Queries.getQuery(Query.GET_USER_INFO);
-
+                QueryRunner qr = QueryRunner.getRunner(Query.GET_USER_INFO);
                 // accept different types of indentifiers
-                if(identifier instanceof String) {
-                    st.setString(1, (String) identifier);
-                    st.setInt(2, -1);
-                } else if(identifier instanceof Integer) {
-                    st.setString(1, "");
-                    st.setInt(2, (Integer) identifier);
+                if (identifier instanceof String) {
+                    qr.setParam((String) identifier);
+                    qr.setParam(-1);
+                } else if (identifier instanceof Integer) {
+                    qr.setParam("");
+                    qr.setParam((Integer) identifier);
                 } else {
                     LOG.warning("Invalid type given to fetchuser");
                     return false;
                 }
 
-                ResultSet res = st.executeQuery();
-                if(res.next()) {
-                    String tempName = res.getString("name");
-                    User newUser = UserFactory.createUser(tempName, res.getInt("idUser"),
-                            DateProvider.getDateAsDate(res.getString("date")));
-                    UserProvider.addUserToUserMap(tempName, newUser);
-                } else {
-                    LOG.info("Could not fetch user " + identifier + ". User does not exist");
-                    return false;
-                }
+                qr.run();
+                String name = qr.getFirstResult(String.class, "name");
+                int id = qr.getFirstResult(Integer.class, "id");
+                Date date = qr.getFirstResult(Date.class, "date");
+                User newUser = UserFactory.createUser(name, id, date);
+                UserProvider.addUserToUserMap(newUser);
+                LOG.info("User " + name + " fetched from database");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOG.warning("Error occurred in user creation. User " + identifier + " was not created.");
         }
         return false;
     }
@@ -74,7 +71,6 @@ public class UserProvider {
      * @throws SQLException sql exception if there was problem with connection rather that finding user
      */
     public static <T> boolean userExists(T identifier) throws SQLException {
-        LOG.info("Checking whether user " + identifier.toString() + " exists");
         QueryRunner qr;
         if(identifier instanceof String){
             qr = QueryRunner.getRunner(Query.GET_USER_EXISTS_BY_NAME);
@@ -87,7 +83,7 @@ public class UserProvider {
             return false;
         }
         qr.run();
-        final int users = qr.getResultRows();
+        final long users = qr.getResults(Long.class, "NUMBER").get(0);
         if(users == 1) {
             return true;
         } else if(users > 1) {
@@ -105,19 +101,15 @@ public class UserProvider {
      * @return true if the pwd was correct, false otherwise
      */
     public static boolean authenticateUser(String name, String password) {
-        PreparedStatement st = Queries.getQuery(Query.GET_USER_INFO);
-        try {
-            st.setString(1, name);
-            ResultSet res = st.executeQuery();
-            if (res.next()) {
-                password = StringCrypt.encrypt(password);
-                return password.equals(res.getString("passwd"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        LOG.info("Authenticating user " + name);
+        QueryRunner qr = QueryRunner.getRunner(Query.GET_USER_INFO);
+        // search by name, not id
+        qr.setParam(name);
+        qr.setParam(-1);
+        qr.run();
+        password = StringCrypt.encrypt(password);
+        List<String> pwd2 = qr.getResults(String.class, "passwd");
+        return pwd2.size() > 0 ? password.equals(pwd2.get(0)) : false;
     }
 
     /**
@@ -128,7 +120,13 @@ public class UserProvider {
     public static int getNextId() {
         QueryRunner qr = QueryRunner.getRunner(Query.GET_MAX_USER_ID);
         qr.run();
-        return qr.getResults(Integer.class, "max").get(0) + 1;
+        int num = 0;
+        try {
+            num = qr.getResults(Integer.class, "max").get(0);
+        } catch (NullPointerException e) {
+            num = 0;
+        }
+        return  num + 1;
     }
 
     /**
@@ -153,8 +151,7 @@ public class UserProvider {
             try {
                 if (userExists(name)) {
                     fetchUser(name);
-                    // recursive call, but this time the user exists in map
-                    return getUser(name);
+                    result = userMap.get(name);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -171,22 +168,27 @@ public class UserProvider {
      */
     public static User getUser(int id) {
         User result = null;
-        for (Map.Entry e : userMap.entrySet()) {
-            User u = (User) e.getValue();
-            if (u.getId() == id) {
-                result = u;
-                break;
-            }
-        }
-        if (result == null) {
-            try {
-                if (userExists(id)) {
-                    fetchUser(id);
-                    // recursive call, but this time the user exists in map
-                    result = getUser(id);
+
+        // iterate twice, if not found on first try to load from database
+        // if not found then the user does not exists
+        for (int i = 0; i < 2; i++) {
+            for (Map.Entry e : userMap.entrySet()) {
+                User u = (User) e.getValue();
+                if (u.getId() == id) {
+                    result = u;
+                    break;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            }
+            if (result == null) {
+                try {
+                    if (userExists(id)) {
+                        fetchUser(id);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                break;
             }
         }
         return result;
@@ -198,7 +200,7 @@ public class UserProvider {
      * @param name user name
      * @param user user object
      */
-    static void addUserToUserMap(String name, User user) {
-        userMap.put(name, user);
+    static void addUserToUserMap(User user) {
+        userMap.put(user.getName(), user);
     }
 }

@@ -11,20 +11,21 @@ import java.util.logging.Logger;
  */
 public class WordFactory {
     public static Word getWord(int id, String word, Language lang, Set<Word> masters) {
-        if(word.length() <= 0) {
+        if (word.length() <= 0) {
             LOG.warning("Invalid word string to WordFactory");
             return null;
         }
-        if(lang == null) {
+        if (lang == null) {
             throw new NullPointerException("Language given to WordFactory is null!");
         }
         Word newWord = new Word();
         newWord.setId(id);
         newWord.setLang(lang);
-        if(masters != null)
+        if (masters != null)
             newWord.setMasters(masters);
         newWord.setWord(word);
         return newWord;
     }
+
     private static Logger LOG = Logger.getLogger(WordFactory.class.getName());
 }

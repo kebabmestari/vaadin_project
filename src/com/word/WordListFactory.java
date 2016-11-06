@@ -1,7 +1,6 @@
 package com.word;
 
 import com.user.User;
-import com.user.UserProvider;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -13,14 +12,17 @@ import java.util.logging.Logger;
  */
 public class WordListFactory {
     public static WordList getWordList(int id, String name, User creator, int maxScore, List<Word> words) {
+
         WordList newList = new WordList();
         newList.setId(id);
         newList.setCreator(creator);
         newList.setMaxScore(maxScore);
         newList.setName(name);
-        if(words.size() == 0) {
+
+        if (words.size() == 0) {
             LOG.info("Creating a list with no words");
         }
+
         newList.setWords(words);
         return newList;
     }

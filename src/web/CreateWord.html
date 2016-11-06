@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" name="design-properties"
+          content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+    <meta charset="UTF-8" name="vaadin-version" content="7.7.0">
+</head>
+<body>
+<vaadin-horizontal-layout spacing height-full>
+    <vaadin-vertical-layout size-auto>
+        <vaadin-horizontal-layout spacing>
+            <vaadin-vertical-layout size-auto>
+                <vaadin-label size-auto plain-text>
+                    Word
+                </vaadin-label>
+                <vaadin-text-field _id="wordField"></vaadin-text-field>
+            </vaadin-vertical-layout>
+            <vaadin-button icon="fonticon://FontAwesome/f0c7" style-name="friendly" plain-text _id="saveButton" :bottom
+                           :right>
+                Save
+            </vaadin-button>
+            <vaadin-native-select icon="fonticon://FontAwesome/f1ab" caption="Select Language" _id="languageSelect"
+                                  :bottom :right></vaadin-native-select>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout spacing>
+            <vaadin-vertical-layout size-auto>
+                <vaadin-label size-auto plain-text>
+                    Explanation
+                </vaadin-label>
+                <vaadin-text-field _id="explanationField"></vaadin-text-field>
+            </vaadin-vertical-layout>
+            <vaadin-button icon="fonticon://FontAwesome/f055" plain-text _id="explanationButton" :bottom :right>
+                Add explanation
+            </vaadin-button>
+        </vaadin-horizontal-layout>
+        <vaadin-label size-auto plain-text>
+            Explanations
+        </vaadin-label>
+        <vaadin-grid _id="explanationGrid">
+            <table>
+                <colgroup>
+                    <col property-id="Word" sortable>
+                </colgroup>
+                <thead>
+                <tr default>
+                    <th plain-text>Word</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </vaadin-grid>
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout size-auto></vaadin-vertical-layout>
+</vaadin-horizontal-layout>
+</body>
+</html>

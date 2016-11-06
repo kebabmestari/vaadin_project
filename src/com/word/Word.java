@@ -37,6 +37,7 @@ public class Word {
     public String getWord() {
         return word;
     }
+
     public void setWord(String word) {
         this.word = word.toLowerCase();
     }
@@ -46,9 +47,11 @@ public class Word {
     public Set<Word> getMasters() {
         return masters;
     }
+
     public void addMaster(Word master) {
         this.masters.add(master);
     }
+
     public void setMasters(Set<Word> masters) {
         this.masters.addAll(masters);
     }
@@ -58,6 +61,7 @@ public class Word {
     public Language getLang() {
         return lang;
     }
+
     public void setLang(Language lang) {
         this.lang = lang;
     }
@@ -67,6 +71,7 @@ public class Word {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -81,13 +86,14 @@ public class Word {
     /**
      * Iterates through the master words and checks if given
      * string is a correct translation for this word
+     *
      * @param word answered word as string
      * @return true if the answer is correct
      */
     public boolean isExplanation(String word) {
         word = word.toLowerCase();
-        for(Word w : this.masters) {
-            if(w.getWord().equals(word)) {
+        for (Word w : this.masters) {
+            if (w.getWord().equals(word)) {
                 return true;
             }
         }

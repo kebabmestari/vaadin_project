@@ -5,10 +5,7 @@ import com.database.DatabaseConnectorTest;
 import com.user.User;
 import com.user.UserFactory;
 import com.word.lang.Language;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +20,7 @@ public class WordListTest {
     DatabaseConnector conn;
 
     @Test
+    @Ignore
     public void buildWordList() throws Exception {
         User testUser = UserFactory.createUser("testuser", 1, new Date());
         List<Word> words = new ArrayList<>();
@@ -43,6 +41,15 @@ public class WordListTest {
 
     @Test
     public void createWordList() throws Exception {
+        WordList test = getTestList();
+
+        Assert.assertNotNull(test.getWords());
+        Assert.assertEquals(test.getWords().size(), 10);
+
+        Assert.assertEquals(test.getName(), "test list please ignore");
+    }
+
+    public static WordList getTestList() {
         WordList test = new WordList();
         Language testLang = new Language();
         testLang.setId(1);
@@ -52,11 +59,7 @@ public class WordListTest {
         }
         test.setId(1);
         test.setName("test list please ignore");
-
-        Assert.assertNotNull(test.getWords());
-        Assert.assertEquals(test.getWords().size(), 10);
-
-        Assert.assertEquals(test.getName(), "test list please ignore");
+        return test;
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 /**
  * An instance of word list in usage
+ * Represents an instance of the game
  * Supplies new words and tracks the score
  * Created by samlinz on 17.10.2016.
  */
@@ -34,38 +35,89 @@ public class RoundInstance {
         // init word set
         this.appeared = new HashSet<>();
         this.randomGenerator = new Random();
-        this.wordNumber = 1;
+        this.wordNumber = 0;
         this.score = 0;
+        LOG.info("Initializing round");
     }
 
     // return master list
-    private WordList getMasterList() {
+    public WordList getMasterList() {
         return masterList;
     }
 
     // set master list
     private void setMasterList(WordList masterList) {
         this.masterList = masterList;
+        LOG.info("Initializing round to list " + masterList.getName());
     }
 
     /**
      * Return a random word from the list
+     *
      * @return Word object
      */
-    public Word getNextWord() {
+    public Word getNextWord() throws RoundOver {
 
-        if(isOver()) {
-
+        if (isOver()) {
+            throw new RoundOver();
         }
 
         List<Word> words = masterList.getWords();
-        Word word = words.get(randomGenerator.nextInt(words.size()));
+        Word word = null;
+        do {
+            if(appeared.size() >= masterList.getWordCount()) {
+                LOG.info("Round over because all words iterated! Change your maxword attribute!");
+                throw new RoundOver();
+            }
+            word = words.get(randomGenerator.nextInt(words.size()));
+        } while (appeared.contains(word));
         appeared.add(word);
         LOG.info("Picked word " + word.getWord());
 
         wordNumber++;
 
         return word;
+    }
+
+    /**
+     * Check if the guessed word was correct
+     *
+     * @param guess  guessed word as string
+     * @param actual the actual word
+     * @return true if correct
+     */
+    public static boolean guessWord(String guess, Word actual) {
+        boolean result = false;
+        guess = guess.toLowerCase();
+        Set<Word> masters = actual.getMasters();
+        for(Word w : masters) {
+            if(w.getWord().equals(guess)) {
+                result = true;
+                break;
+            }
+        }
+        if (!result) {
+            final Set<Word> masters1 = actual.getMasters();
+            LOG.info("Wrong answer. Actual: " + masters1 == null ? "null" : masters1.toString());
+        } else {
+            LOG.info("Correct answer");
+        }
+        return result;
+    }
+
+    /**
+     * Increments score by one
+     */
+    public void addScore() {
+        this.score++;
+        LOG.info("Icremented score by one");
+    }
+
+    /**
+     * @return round score
+     */
+    public int getScore() {
+        return this.score;
     }
 
     public void setMaster(WordList list) {
@@ -76,7 +128,9 @@ public class RoundInstance {
      * @return true if this word is the last in round
      */
     public boolean isOver() {
-        return wordNumber > masterList.getWordCount();
+        return
+                (wordNumber > masterList.getMaxScore()) ||
+                wordNumber > masterList.getWordCount();
     }
 
     static {

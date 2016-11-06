@@ -1,6 +1,5 @@
 package com.game;
 
-import com.database.Freeable;
 import com.user.User;
 import com.word.WordList;
 
@@ -76,7 +75,7 @@ public class Result {
         return user;
     }
 
-   void setUser(User user) {
+    void setUser(User user) {
         this.user = user;
     }
 

@@ -29,6 +29,10 @@ public class QueryRunner {
     // constructor
     private QueryRunner(Query query) {
         st = Queries.getQuery(query);
+        if (st == null) {
+            LOG.warning("Query is NULL, cannot run");
+            return;
+        }
         this.param = 0;
         qrName = query.toString();
         try {
@@ -44,7 +48,10 @@ public class QueryRunner {
      * Results can be fetched with getResults
      */
     public void run() {
-        if(this.param < this.maxParam) {
+        if (st == null) {
+            LOG.warning("Cannot run query, query not set");
+        }
+        if (this.param < this.maxParam) {
             LOG.warning(qrName + ": Cannot run query, all parameters are not set!");
             return;
         }
@@ -61,14 +68,18 @@ public class QueryRunner {
      * Run an update to the database
      * Does not return any results
      */
-    public void runUpdate() {
-        if(this.param < this.maxParam) {
+    public int runUpdate() {
+        if (st == null) {
+            LOG.warning("Cannot run query, query not set");
+        }
+        int updates = -1;
+        if (this.param < this.maxParam) {
             LOG.warning(qrName + ": Cannot run query, all parameters are not set!");
-            return;
+            return -1;
         }
         try {
-            int updates = st.executeUpdate();
-            if(updates > 0) {
+            updates = st.executeUpdate();
+            if (updates > 0) {
                 LOG.info(qrName + ": Successfully updated " + updates + " entries");
             } else {
                 LOG.warning(qrName + ": Failed to run updates");
@@ -78,19 +89,24 @@ public class QueryRunner {
             e.printStackTrace();
             close();
         }
+        return updates;
     }
 
     /**
      * Get result size in rows
+     *
      * @return integer number of rows
      */
     public int getResultRows() {
-        if(rs == null) {
+        if (st == null) {
+            LOG.warning("Cannot get result rows, query not set");
+        }
+        if (rs == null) {
             return -1;
         }
         int count = 0;
         try {
-            while(rs.next()) {
+            while (rs.next()) {
                 count++;
             }
         } catch (SQLException e) {
@@ -101,17 +117,20 @@ public class QueryRunner {
 
     /**
      * Return list of single column's data
+     *
      * @param column column number
      * @return arraylist of row values
      */
     public <T> List<T> getResults(Class<T> caster, String column) {
-        // move cursor to beginning
+        if (st == null) {
+            LOG.warning("Cannot get results, query not set");
+        }
 
         LOG.info(qrName + ": Fetching results of column " + column);
 
         List<T> result = new ArrayList<>();
 
-        if(rs == null) {
+        if (rs == null) {
             LOG.warning(qrName + ": ResultSet not fetched, run query first!");
             return null;
         }
@@ -121,7 +140,7 @@ public class QueryRunner {
         try {
             rs.beforeFirst();
             // fetch the single column from each row=
-            while(rs.next()) {
+            while (rs.next()) {
                 result.add(caster.cast(rs.getObject(column)));
                 rowCount++;
             }
@@ -135,17 +154,37 @@ public class QueryRunner {
     }
 
     /**
+     * Return the first result in ResultSet
+     * This is user when only one value is expected
+     *
+     * @param caster
+     * @param column
+     * @param <T>
+     * @return
+     */
+    public <T> T getFirstResult(Class<T> caster, String column) {
+        List<T> results = getResults(caster, column);
+        if (results.size() > 0) {
+            return results.get(0);
+        }
+        return null;
+    }
+
+    /**
      * Set a parameter for prepared query
+     *
      * @param value the value
-     * @param <T> type
+     * @param <T>   type
      */
     public <T> void setParam(T value) {
         param++;
         try {
-            if(value instanceof String) {
+            if (value instanceof String) {
                 st.setString(param, (String) value);
             } else if (value instanceof Integer) {
                 st.setInt(param, (Integer) value);
+            } else if (value instanceof java.util.Date) {
+                st.setDate(param, new java.sql.Date(((java.util.Date) value).getTime()));
             } else {
                 LOG.warning("Unsupported type of parameter for SQL query");
             }
@@ -166,7 +205,7 @@ public class QueryRunner {
 //                st.close();
 //                st = null;
 //            }
-            if(rs != null) {
+            if (rs != null) {
                 rs.close();
                 rs = null;
             }
@@ -179,6 +218,7 @@ public class QueryRunner {
 
     /**
      * Get instance of runner
+     *
      * @return queryrunner
      */
     public static QueryRunner getRunner(Query query) {

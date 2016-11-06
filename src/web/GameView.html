@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" name="design-properties"
+          content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+    <meta charset="UTF-8" name="vaadin-version" content="7.7.0">
+</head>
+<body>
+<vaadin-vertical-layout margin>
+    <vaadin-horizontal-layout spacing width-full margin :middle :center :expand>
+        <vaadin-label size-auto plain-text>
+            Word:
+        </vaadin-label>
+        <vaadin-label size-auto plain-text _id="wordLabel">
+            Label
+        </vaadin-label>
+        <vaadin-label size-auto plain-text _id="numberLabel" :bottom :right>
+            Label
+        </vaadin-label>
+    </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout :middle :center :expand>
+        <vaadin-text-field input-prompt="Translation" _id="answerInput"></vaadin-text-field>
+        <vaadin-vertical-layout size-auto>
+            <vaadin-button style-name="friendly" width="100px" plain-text _id="submitButton">
+                Submit
+            </vaadin-button>
+            <vaadin-progress-bar width="100px" _id="timeleft"></vaadin-progress-bar>
+        </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+</vaadin-vertical-layout>
+</body>
+</html>

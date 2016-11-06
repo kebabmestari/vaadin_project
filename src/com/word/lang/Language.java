@@ -4,7 +4,7 @@ package com.word.lang;
  * A language which has words assigned to it
  * Created by samlinz on 25.10.2016.
  */
-public class Language implements Tag{
+public class Language implements Tag {
 
     // string identifier of the language
     private String name;

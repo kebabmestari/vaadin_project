@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" name="design-properties"
+          content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+    <meta charset="UTF-8" name="vaadin-version" content="7.7.0">
+</head>
+<body>
+<vaadin-vertical-layout spacing size-full margin>
+    <vaadin-horizontal-layout spacing _id="nameField" :middle :center>
+        <vaadin-text-field caption="List name" _id="listnameField"></vaadin-text-field>
+        <vaadin-native-select caption="Select language" _id="languageSelect"></vaadin-native-select>
+        <vaadin-button plain-text _id="resetButton" :bottom :center>
+            Reset list
+        </vaadin-button>
+    </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout spacing :middle :center>
+        <vaadin-button style-name="primary" width="100px" plain-text _id="addButton">
+            Add
+        </vaadin-button>
+        <vaadin-button style-name="primary" width="100px" plain-text _id="removeButton">
+            Remove
+        </vaadin-button>
+        <vaadin-button style-name="friendly" plain-text _id="saveButton" :right>
+            Save
+        </vaadin-button>
+        <vaadin-button plain-text _id="createWordButton">
+            Create Word
+        </vaadin-button>
+    </vaadin-horizontal-layout>
+    <vaadin-grid size-full _id="wordGrid" :expand>
+        <table>
+            <colgroup>
+                <col property-id="Word" sortable>
+            </colgroup>
+            <thead>
+            <tr default>
+                <th plain-text>Word</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </vaadin-grid>
+    <vaadin-horizontal-layout></vaadin-horizontal-layout>
+</vaadin-vertical-layout>
+</body>
+</html>

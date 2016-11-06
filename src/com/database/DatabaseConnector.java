@@ -1,10 +1,10 @@
 package com.database;
 
-import com.database.Queries;
-import com.game.Result;
 import com.word.lang.LanguageProvider;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -38,13 +38,13 @@ public class DatabaseConnector {
 
     /**
      * Register a JDBC connector
+     *
      * @return boolean indicating the success of registering the connector
      */
     private boolean getConnector() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-        }
-        catch(ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             LOG.warning("Failed to get the DB connector class");
             return false;
         }
@@ -54,6 +54,7 @@ public class DatabaseConnector {
 
     /**
      * Shortcut for opening connection with hardcoded default values for server
+     *
      * @return true if the connection was successfull
      */
     public boolean connect() {
@@ -65,7 +66,7 @@ public class DatabaseConnector {
      */
     public boolean connect(String address, int port, String user, String passwd) {
 
-        if(address == null || port == -1) {
+        if (address == null || port == -1) {
             LOG.warning("Cannot connect to a database; the database configuration is not set");
             return false;
         }
@@ -107,7 +108,7 @@ public class DatabaseConnector {
      * @return boolean indicating the status of connection
      */
     public boolean isConnected() {
-        if(conn != null) {
+        if (conn != null) {
             try {
                 return !conn.isClosed();
             } catch (SQLException e) {
@@ -122,7 +123,7 @@ public class DatabaseConnector {
      * Close database connection
      */
     public void closeConnection() {
-        if(conn != null) {
+        if (conn != null) {
             try {
                 conn.close();
                 Queries.closeQueries();
@@ -132,7 +133,7 @@ public class DatabaseConnector {
                 return;
             }
         }
-        if(!isConnected()) {
+        if (!isConnected()) {
             LOG.info("Database connection closed");
         }
     }
@@ -142,7 +143,7 @@ public class DatabaseConnector {
      * System uses only one instance but unit tests have their own
      */
     public void removeInstance() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             LOG.info("Connection still open, closing..");
             closeConnection();
         }
@@ -153,6 +154,7 @@ public class DatabaseConnector {
     /**
      * Static method for receiving the instance of the connector
      * or initializing new with default values if does not exists
+     *
      * @return
      */
     public static DatabaseConnector getInstance() {
@@ -167,6 +169,7 @@ public class DatabaseConnector {
 
     /**
      * Set db server config
+     *
      * @param address
      * @param port
      * @param user
@@ -183,8 +186,9 @@ public class DatabaseConnector {
 
     /**
      * Set db server ip and port
+     *
      * @param address ip address
-     * @param port port
+     * @param port    port
      */
     public void setDbServer(String address, int port) {
         setDbServer(address, port, sUser, sPasswd);
@@ -192,6 +196,7 @@ public class DatabaseConnector {
 
     /**
      * Sanitize string to be used as query to prevent injection
+     *
      * @param str
      * @return string which has been trimmed and stripped of malicious special characters
      */
@@ -204,26 +209,6 @@ public class DatabaseConnector {
                 .replace("(", "")
                 .replace(")", "");
     }
-
-/*    *//**
-     * Builds the required system objects from
-     * @throws NotFlushedException if new objects are not flushed to database
-     *//*
-    public static void buildSystemState() throws NotFlushedException{
-        LOG.info("Building system state from database...");
-
-        ResultSet rs;
-
-        // create all user objects
-        PreparedStatement userSt = Queries.getQuery(Query.GET_ALL_USERS);
-        rs = userSt.executeQuery();
-        LOG.info("Fetching users and building user objects");
-        while(rs.next()) {
-
-        }
-
-        LOG.info("System state restored!");
-    }*/
 
     // fetch class logger
     static {

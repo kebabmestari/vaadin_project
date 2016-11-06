@@ -30,7 +30,7 @@ public class Queries {
         queries = new EnumMap<>(Query.class);
 
         try {
-            for(Query q : Query.values()) {
+            for (Query q : Query.values()) {
                 queries.put(q, conn.prepareStatement(q.getSQL()));
             }
         } catch (SQLException e) {
@@ -63,7 +63,7 @@ public class Queries {
      * Closes all PreparedStatements!
      */
     public static void closeQueries() {
-        for(Map.Entry w : queries.entrySet()) {
+        for (Map.Entry w : queries.entrySet()) {
             try {
                 ((PreparedStatement) w.getValue()).close();
             } catch (SQLException e) {

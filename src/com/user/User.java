@@ -4,16 +4,14 @@ import com.database.Freeable;
 import com.game.Result;
 import com.word.WordList;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * Class representing the user of database
  * Created by samlinz on 17.10.2016.
  */
-public class User implements Freeable{
+public class User implements Freeable {
 
     // user account name
     private String name;
@@ -23,13 +21,13 @@ public class User implements Freeable{
     private Date creationDate;
 
     // list of user's lists
-    private Set<WordList> ownLists;
+    private Set<WordList> ownLists = new HashSet<>();
 
     // results
-    private List<Result> results;
+    private List<Result> results = new ArrayList<>();
 
     // user favourited lists
-    private Set<WordList> favourites;
+    private Set<WordList> favourites = new HashSet<>();
 
     // instatiate using the provider
     User() {
@@ -69,6 +67,7 @@ public class User implements Freeable{
 
     /**
      * Add user result to list
+     *
      * @param res result object
      */
     public void addResult(Result res) {

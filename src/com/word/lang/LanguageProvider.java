@@ -1,12 +1,9 @@
 package com.word.lang;
 
-import com.database.Queries;
 import com.database.Query;
 import com.database.QueryRunner;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +18,13 @@ public class LanguageProvider {
 
     /**
      * Add a new language to the map
+     *
      * @param name name of the language
-     * @param id id of the language
+     * @param id   id of the language
      */
     public static void addLanguage(String name, int id) {
         name = name.toLowerCase();
-        if(!languageMap.containsKey(name)) {
+        if (!languageMap.containsKey(name)) {
             Language newlang = new Language();
             newlang.setId(id);
             newlang.setName(name);
@@ -42,9 +40,9 @@ public class LanguageProvider {
     public static void fetchLanguages() {
         QueryRunner qr = QueryRunner.getRunner(Query.GET_LANGUAGES);
         qr.run();
-        List<Integer> langIds   = qr.getResults(Integer.class, "idLanguage");
-        List<String> langNames  = qr.getResults(String.class, "name");
-        for(int i = 0; i < langIds.size(); i++) {
+        List<Integer> langIds = qr.getResults(Integer.class, "idLanguage");
+        List<String> langNames = qr.getResults(String.class, "name");
+        for (int i = 0; i < langIds.size(); i++) {
             addLanguage(langNames.get(i), langIds.get(i));
         }
         qr.close();
@@ -52,11 +50,30 @@ public class LanguageProvider {
 
     /**
      * Retvieve a language object
+     *
      * @param id lang id
      * @return Language object if it exists, null otherwise
      */
     public static Language getLanguage(int id) {
         return languageMap.get(id);
+    }
+
+    public static Language getLanguage(String name) {
+        final Collection<Language> values = languageMap.values();
+        for(Language l : values) {
+            if(l.getName().equals(name.toLowerCase())) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Retvieve all languages in a list
+     * @return List of Language objects
+     */
+    public static Collection<Language> getAllLanguages() {
+        return languageMap.values();
     }
 
     /**

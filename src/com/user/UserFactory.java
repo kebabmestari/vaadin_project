@@ -1,12 +1,10 @@
 package com.user;
 
-import com.database.Queries;
 import com.database.Query;
+import com.database.QueryRunner;
 import com.database.StringCrypt;
 import com.util.DateProvider;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Logger;
@@ -50,7 +48,7 @@ public class UserFactory {
         // if we are sending plaintext pwds in cookies
         // FIXME: 26.10.2016
         pwd = StringCrypt.encrypt(pwd);
-        
+
         try {
             if (userExists(name)) {
                 throw new UserExistsAlreadyException(name);
@@ -62,7 +60,7 @@ public class UserFactory {
         User newUser = createUser(name, UserProvider.getNextId(), DateProvider.getDate());
         if (flushUser(newUser, pwd)) {
             LOG.info("New user " + name + " successfully created and flushed to database");
-            UserProvider.addUserToUserMap(name, newUser);
+            UserProvider.addUserToUserMap(newUser);
             return true;
         } else {
             LOG.warning("Failed to flush ");
@@ -76,20 +74,12 @@ public class UserFactory {
      * @param user user object
      */
     public static boolean flushUser(User user, String pwd) {
-        PreparedStatement st = Queries.getQuery(Query.CREATE_USER);
-        try {
-            st.setString(1, user.getName());
-            st.setString(2, StringCrypt.encrypt(pwd));
-            if (st.executeUpdate() > 0) {
-                LOG.info("User " + user + " flushed to database");
-                return true;
-            } else {
-                LOG.warning("Flushing user " + user + " to database failed!");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        LOG.info("Flushing user " + user.getId() + "-" + user.getName() + " to database");
+        QueryRunner qr = QueryRunner.getRunner(Query.CREATE_USER);
+        qr.setParam(user.getName());
+        qr.setParam(pwd);
+        boolean result = qr.runUpdate() > 0;
+        return result;
     }
 
     // logger

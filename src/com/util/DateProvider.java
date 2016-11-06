@@ -42,14 +42,14 @@ public class DateProvider {
         return dateFormat.format(dateFormat.format(date));
     }
 
-     /**
+    /**
      * @return current datetime as text corresponding to the format used by database
      */
     public static String getDateTimeAsText() {
         return dateTimeFormat.format(getDate());
     }
 
-     /**
+    /**
      * @return given datetime as text corresponding to the format used by database
      */
     public static String getDateTimeAsText(Date date) {
