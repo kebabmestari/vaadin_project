@@ -31,36 +31,47 @@ class TimeTracker extends Thread {
     }
 
     public TimeTracker(GameViewLayout callback, int timeleft) {
-        super();
-        this.running = true;
         this.time = timeleft * 1000;
+        resetTimer();
+        cb = callback;
+    }
+
+    public void resetTimer() {
+        this.running = true;
         this.startTime = this.lastTick = System.currentTimeMillis();
         this.LOG = Logger.getLogger(TimeTracker.class.getName());
-        LOG.info("Initialized TimeTracker with maxtime " + this.time + " and starttime" + this.startTime);
+        LOG.info("Initialized TimeTracker with maxtime " + this.time + " and starttime " + this.startTime);
+    }
 
-        cb = callback;
+    public void closeTimer() {
+        running = false;
     }
 
     @Override
     public void run() {
         AtomicLong timer = new AtomicLong(0);
-        while (running) {
-            timer.set(System.currentTimeMillis() - startTime);
-            if (timer.get() >= time) {
-                UI.getCurrent().access(()-> {
-                    cb.timeOut();
-                    UI.getCurrent().push();
-                });
-                break;
+        try {
+            while (running) {
+                timer.set(System.currentTimeMillis() - startTime);
+                if (timer.get() >= time) {
+                    System.out.println("TIMEOUT");
+                    UI.getCurrent().access(()-> {
+                        cb.timeOut();
+                        UI.getCurrent().push();
+                    });
+                }
+                if(System.currentTimeMillis() - this.lastTick > 1000) {
+                    this.lastTick = System.currentTimeMillis();
+                    UI.getCurrent().access(()-> {
+                        cb.setTimeBar((float) timer.get() / (float) time);
+                        UI.getCurrent().push();
+                    });
+                }
             }
-            if(System.currentTimeMillis() - this.lastTick > 1000) {
-                this.lastTick = System.currentTimeMillis();
-                UI.getCurrent().access(()-> {
-                    cb.setTimeBar((float) timer.get() / (float) time);
-                    UI.getCurrent().push();
-                });
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        System.out.println("KILLING THREAD ");
     }
 }
 
@@ -89,10 +100,9 @@ public class GameViewLayout extends GameView {
         this.timeleft.setValue(1.f);
 
         round = WordListProvider.getInstance(list);
-        if (currentWord == null) {
-            gameOn = true;
-            getNext();
-        }
+
+        gameOn = true;
+        getNext();
 
         submitButton.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         submitButton.addClickListener((e) -> {
@@ -118,13 +128,13 @@ public class GameViewLayout extends GameView {
         if (gameOn) {
             Notification.show("Time out", Notification.Type.TRAY_NOTIFICATION);
             getNext();
+        } else {
+            timer.closeTimer();
         }
     }
 
     public void setTimeBar(float val) {
-        synchronized(timeleft) {
-            this.timeleft.setValue(val);
-        }
+        this.timeleft.setValue(val);
     }
 
     /**
@@ -133,15 +143,18 @@ public class GameViewLayout extends GameView {
     private void getNext() {
 
         if (timer != null) {
-            timer.interrupt();
+            timer.resetTimer();
+        } else {
+            timer = new TimeTracker(this, TIME);
+            timer.start();
         }
 
         if (!gameOn) {
+            if(timer != null) {
+                timer.closeTimer();
+            }
             return;
         }
-
-        timer = new TimeTracker(this, TIME);
-        timer.start();
 
         // fetch next word
         try {
@@ -150,7 +163,6 @@ public class GameViewLayout extends GameView {
             this.number++;
             numberLabel.setValue(this.number + " / " + round.getMasterList().getMaxScore());
         } catch (RoundOver roundOver) {
-            gameOn = false;
             Notification.show(
                     "Round over", "score " + round.getScore() + "/" + round.getMasterList().getMaxScore(),
                     Notification.Type.ERROR_MESSAGE
@@ -165,6 +177,7 @@ public class GameViewLayout extends GameView {
      * and flush it to db
      */
     private void createResult() {
+        gameOn = false;
         if (round == null) {
             return;
         }

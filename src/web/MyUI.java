@@ -62,7 +62,13 @@ public class MyUI extends UI {
 
     static {
         dbConn = DatabaseConnector.getInstance();
-        dbConn.connect("localhost", 3306, "root", "lollolehtia1");
+        dbConn.setDbServer(
+                "eu-cdbr-west-01.cleardb.com",
+                "heroku_8105832cd3563e7",
+                3306,
+                "bb5ad3c7cbd963",
+                "109c5f22");
+        dbConn.connect();
     }
 
 }

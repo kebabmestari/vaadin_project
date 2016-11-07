@@ -19,7 +19,7 @@ public class DatabaseConnector {
     private String sUser = "user";
     private String sPasswd = "kebab";
 
-    public static String dbName = "wordSystem";
+    public static String sdbName = "wordSystem";
     public static String sAddress = "localhost";
     public static int sPort = 3306;
     private Connection conn = null;
@@ -72,7 +72,7 @@ public class DatabaseConnector {
         }
 
         // set up the db config and user info
-        String URL = "jdbc:mysql://" + address + "/" + dbName;
+        String URL = "jdbc:mysql://" + address + "/" + sdbName;
         Properties info = new Properties();
         info.put("user", user);
         info.put("password", passwd);
@@ -176,7 +176,21 @@ public class DatabaseConnector {
      * @param pwd
      */
     public void setDbServer(String address, int port, String user, String pwd) {
+        setDbServer(address, sdbName, port, user, pwd);
+    }
+
+    /**
+     * Set db server config
+     *
+     * @param address
+     * @param dbName
+     * @param port
+     * @param user
+     * @param pwd
+     */
+    public void setDbServer(String address, String dbName, int port, String user, String pwd) {
         sAddress = address;
+        sdbName = dbName;
         sPort = port;
         sUser = user;
         sPasswd = pwd;
@@ -184,12 +198,12 @@ public class DatabaseConnector {
     }
 
 
-    /**
-     * Set db server ip and port
-     *
-     * @param address ip address
-     * @param port    port
-     */
+        /**
+         * Set db server ip and port
+         *
+         * @param address ip address
+         * @param port    port
+         */
     public void setDbServer(String address, int port) {
         setDbServer(address, port, sUser, sPasswd);
     }

@@ -55,10 +55,10 @@ class SignUpLogic extends SignUpForm {
                 Notification.show("User creation succeeded", "You can now log in", Notification.Type.HUMANIZED_MESSAGE);
                 return;
             } else {
-                LOG.warning("Creating user " + name + " failed");
+//                LOG.warning("Creating user " + name + " failed");
             }
         }
-        Notification.show("Creating user " + name + " failed", Notification.Type.ERROR_MESSAGE);
+//        Notification.show("Creating user " + name + " failed", Notification.Type.ERROR_MESSAGE);
     }
 
     private static Logger LOG = Logger.getLogger(SignUpLogic.class.getName());
